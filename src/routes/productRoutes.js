@@ -1,40 +1,42 @@
 const express = require('express');
 const router = express.Router();
-const Product = require('../models/Product'); // Importamos o modelo que acabamos de criar
+const Product = require('../models/Product');
+const upload = require('../config/upload'); // <--- Importamos o config de upload
 
 // @rota    POST /api/produtos
-// @desc    Cria um novo produto
-router.post('/', async (req, res) => {
+// @desc    Cria um novo produto com imagem
+// Adicionamos 'upload.single('file')' aqui. 'file' será o nome do campo no Insomnia.
+router.post('/', upload.single('file'), async (req, res) => {
     try {
-        // Pega os dados que você enviou
-        const { nome, descricao, preco, categoria, tamanhos, imagem } = req.body;
+        const { nome, descricao, preco, categoria, tamanhos } = req.body;
+        
+        // Verificação de segurança: se não enviou imagem, avisar
+        let imagemUrl = '';
+        if (req.file && req.file.path) {
+            imagemUrl = req.file.path; // O Cloudinary devolve o link aqui em 'path'
+        } else {
+            return res.status(400).json({ message: "A imagem é obrigatória!" });
+        }
 
-        // Cria o produto no banco
+        // Importante: 'tamanhos' pode vir como texto simples do Insomnia (ex: "P,M,G")
+        // Precisamos garantir que vire um array se for enviado assim
+        const listaTamanhos = typeof tamanhos === 'string' ? tamanhos.split(',') : tamanhos;
+
         const produto = await Product.create({
             nome,
             descricao,
             preco,
             categoria,
-            tamanhos,
-            imagem
+            tamanhos: listaTamanhos, 
+            imagem: imagemUrl // Salvamos o link do Cloudinary no banco
         });
 
-        // Devolve o produto criado com status 201 (Criado)
         res.status(201).json(produto);
     } catch (error) {
         res.status(400).json({ message: error.message });
     }
 });
 
-// @rota    GET /api/produtos
-// @desc    Lista todos os produtos
-router.get('/', async (req, res) => {
-    try {
-        const produtos = await Product.find(); // O .find() sem argumentos traz tudo
-        res.json(produtos);
-    } catch (error) {
-        res.status(500).json({ message: error.message });
-    }
-});
+// ... (Mantenha a rota GET como estava) ...
 
 module.exports = router;

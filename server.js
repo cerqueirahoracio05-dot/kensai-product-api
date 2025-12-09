@@ -2,6 +2,7 @@
 const express = require('express');
 const dotenv = require('dotenv');
 const connectDB = require('./src/config/db');
+const cors = require('cors');
 
 // Carrega as variáveis de ambiente do arquivo .env
 dotenv.config();
@@ -11,6 +12,7 @@ connectDB();
 
 const app = express();
 
+app.use(cors());
 // Middleware: permite que o Express entenda requisições JSON
 app.use(express.json());
 
