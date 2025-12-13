@@ -37,6 +37,20 @@ router.post('/', upload.single('file'), async (req, res) => {
     }
 });
 
-// ... (Mantenha a rota GET como estava) ...
+// --- ADICIONE ESTE BLOCO ABAIXO DO ROUTER.POST ---
+
+// @rota    GET /api/produtos
+// @desc    Lista todos os produtos
+router.get('/', async (req, res) => {
+    try {
+        // Busca todos os produtos no banco de dados
+        const produtos = await Product.find();
+        
+        // Devolve a lista em formato JSON
+        res.json(produtos);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+});
 
 module.exports = router;
