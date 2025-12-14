@@ -1,22 +1,19 @@
-# --- Dependências ---
-# A pasta node_modules é gigante e recriável com 'npm install', não versionar.
+# Dependências do Node (Pesado demais, não sobe)
 node_modules/
 
-# --- Segurança (MUITO IMPORTANTE) ---
-# O .env contém a senha do Mongo e chaves do Cloudinary. NUNCA suba isso.
+# Variáveis de Ambiente e Segredos (CRÍTICO: Nunca suba isso)
 .env
 
-# --- Logs e Debug ---
+# Logs de erro e debug
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 logs/
 *.log
 
-# --- Arquivos de Sistema (Lixo) ---
+# Arquivos de Sistema Operacional (Lixo)
 .DS_Store
 Thumbs.db
 
-# --- Configurações de Editor (Opcional) ---
+# Configurações do VS Code (Opcional, boas práticas geralmente ignoram)
 .vscode/
-.idea/
