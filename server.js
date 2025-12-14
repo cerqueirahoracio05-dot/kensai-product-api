@@ -19,6 +19,7 @@ app.use(express.json());
 // Toda vez que alguém acessar /api/produtos, vai para o nosso arquivo de rotas
 app.use('/api/produtos', require('./src/routes/productRoutes'));
 
+app.use('/api/users', require('./src/routes/userRoutes'));
 // Rota de teste simples
 app.get('/', (req, res) => {
     res.send('API da Loja de Roupas em funcionamento!');

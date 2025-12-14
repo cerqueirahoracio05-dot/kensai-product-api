@@ -2,11 +2,12 @@ const express = require('express');
 const router = express.Router();
 const Product = require('../models/Product');
 const upload = require('../config/upload'); // <--- Importamos o config de upload
+const { protect } = require('../middleware/authMiddleware');
 
 // @rota    POST /api/produtos
 // @desc    Cria um novo produto com imagem
 // Adicionamos 'upload.single('file')' aqui. 'file' será o nome do campo no Insomnia.
-router.post('/', upload.single('file'), async (req, res) => {
+router.post('/', protect,  upload.single('file'), async (req, res) => {
     try {
         const { nome, descricao, preco, categoria, tamanhos } = req.body;
         
@@ -55,7 +56,7 @@ router.get('/', async (req, res) => {
 
 // @rota    DELETE /api/produtos/:id
 // @desc    Deleta um produto pelo ID
-router.delete('/:id', async (req, res) => {
+router.delete('/:id', protect, async (req, res) => {
     try {
         // O ID vem da URL (req.params.id)
         const produto = await Product.findByIdAndDelete(req.params.id);
@@ -72,7 +73,7 @@ router.delete('/:id', async (req, res) => {
 
 // @rota    PUT /api/produtos/:id
 // @desc    Atualiza um produto (texto e/ou imagem)
-router.put('/:id', upload.single('file'), async (req, res) => {
+router.put('/:id', protect, upload.single('file'), async (req, res) => {
     try {
         const { nome, descricao, preco, categoria, tamanhos } = req.body;
         
