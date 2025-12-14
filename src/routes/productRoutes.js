@@ -53,4 +53,73 @@ router.get('/', async (req, res) => {
     }
 });
 
+// @rota    DELETE /api/produtos/:id
+// @desc    Deleta um produto pelo ID
+router.delete('/:id', async (req, res) => {
+    try {
+        // O ID vem da URL (req.params.id)
+        const produto = await Product.findByIdAndDelete(req.params.id);
+
+        if (!produto) {
+            return res.status(404).json({ message: "Produto não encontrado" });
+        }
+
+        res.json({ message: "Produto removido com sucesso!" });
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+});
+
+// @rota    PUT /api/produtos/:id
+// @desc    Atualiza um produto (texto e/ou imagem)
+router.put('/:id', upload.single('file'), async (req, res) => {
+    try {
+        const { nome, descricao, preco, categoria, tamanhos } = req.body;
+        
+        // Busca o produto antigo primeiro
+        let produto = await Product.findById(req.params.id);
+
+        if (!produto) {
+            return res.status(404).json({ message: "Produto não encontrado" });
+        }
+
+        // --- LÓGICA DE ATUALIZAÇÃO ---
+        
+        // 1. Se enviou uma NOVA imagem, atualiza o link.
+        // Se não enviou imagem, mantém a antiga (produto.imagem).
+        let imagemUrl = produto.imagem;
+        if (req.file && req.file.path) {
+            imagemUrl = req.file.path;
+        }
+
+        // 2. Tratamento do preço (vírgula por ponto)
+        let novoPreco = preco;
+        if (preco) {
+             novoPreco = String(preco).replace(',', '.');
+        }
+
+        // 3. Tratamento dos tamanhos (se vier string, vira array)
+        let novosTamanhos = tamanhos;
+        if (typeof tamanhos === 'string') {
+            novosTamanhos = tamanhos.split(',');
+        }
+
+        // Atualiza os dados no banco
+        produto.nome = nome || produto.nome;
+        produto.descricao = descricao || produto.descricao;
+        produto.preco = novoPreco || produto.preco;
+        produto.categoria = categoria || produto.categoria;
+        produto.tamanhos = novosTamanhos || produto.tamanhos;
+        produto.imagem = imagemUrl;
+
+        // Salva as alterações
+        const produtoAtualizado = await produto.save();
+
+        res.json(produtoAtualizado);
+
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+});
+
 module.exports = router;
