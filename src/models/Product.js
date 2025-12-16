@@ -1,32 +1,38 @@
 const mongoose = require('mongoose');
 
 const productSchema = mongoose.Schema({
-    nome: {
-        type: String,
-        required: [true, 'Por favor, adicione o nome do produto']
+    nome: { type: String, required: true },
+    descricao: { type: String, required: true },
+    preco: { type: Number, required: true },
+    imagem: { type: String, required: true },
+    
+    // --- NOVIDADES AQUI ---
+    estoque: { 
+        type: Number, 
+        required: true, 
+        default: 0 
     },
-    descricao: {
-        type: String,
-        required: true
+    categorias: { 
+        type: [String], // <--- Agora é uma lista de textos
+        required: true 
     },
-    preco: {
-        type: Number,
-        required: [true, 'Por favor, adicione o preço']
+    colecao: { 
+        type: String, 
+        required: false 
+        // Ex: "Inverno 2025", "Kurohane Drop 1"
     },
-    categoria: {
-        type: String, // Ex: "Camisetas", "Calças"
-        required: true
+    tamanhos: { 
+        type: [String], 
+        required: true 
     },
-    tamanhos: {
-        type: [String], // Array de strings. Ex: ['P', 'M', 'G', 'GG']
-        required: true
-    },
-    imagem: {
-        type: String, // Aqui vai entrar a URL do Cloudinary depois
-        required: false // Pode ser opcional no início
+    cores: { 
+        type: [String], 
+        required: true 
+        // Ex: ["Preto", "Branco", "Midnight Blue"]
     }
+    // ----------------------
 }, {
-    timestamps: true // Cria automaticamente campos 'createdAt' e 'updatedAt'
+    timestamps: true
 });
 
 module.exports = mongoose.model('Product', productSchema);
